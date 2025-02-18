@@ -1,0 +1,33 @@
+# apiVersion: v1
+# kind: Service
+# metadata:
+#   name: {{ .Release.Name }}-service
+#   labels:
+#     app: {{ .Chart.Name }}
+#   annotations:
+#     prometheus.io/scrape: "true"  # Prometheus scrape annotation
+#     prometheus.io/port: "8080"    # Scraping metrics on port 8080
+# spec:
+#   selector:
+#     app: {{ .Release.Name }}
+#   ports:
+#     - protocol: TCP
+#       port: 80
+#       targetPort: 8080  # Your app's port
+#   type: ClusterIP  # ALB Ingress will route traffic to this service
+
+# ---
+# apiVersion: v1
+# kind: Service
+# metadata:
+#   name: grafana-service
+#   labels:
+#     app: grafana
+# spec:
+#   selector:
+#     app: grafana
+#   ports:
+#     - protocol: TCP
+#       port: 80
+#       targetPort: 3000  # Grafana's default port
+#   type: ClusterIP  

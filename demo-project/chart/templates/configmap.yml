@@ -1,0 +1,29 @@
+# apiVersion: v1
+# kind: ConfigMap
+# metadata:
+#   name: alertmanager-config
+#   namespace: {{ .Values.namespace | default "monitoring" }}
+#   labels:
+#     app: alertmanager
+# data:
+#   alertmanager.yml: |
+#     global:
+#       resolve_timeout: 5m
+#       smtp_smarthost: '{{ .Values.alertmanager.smtp.server }}'
+#       smtp_from: '{{ .Values.alertmanager.smtp.from }}'
+#       smtp_auth_username: '{{ .Values.alertmanager.smtp.username }}'
+#       smtp_auth_password: '{{ .Values.alertmanager.smtp.password }}'
+#       smtp_require_tls: {{ .Values.alertmanager.smtp.requireTLS }}
+
+#     route:
+#       receiver: "email-notifications"
+#       group_by: ["alertname", "job"]
+#       group_wait: 30s
+#       group_interval: 5m
+#       repeat_interval: 4h
+
+#     receivers:
+#       - name: "email-notifications"
+#         email_configs:
+#           - to: "{{ .Values.alertmanager.email.to }}"
+#             send_resolved: true
