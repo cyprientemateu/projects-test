@@ -17,14 +17,10 @@ IV. Use a domain (optional, via Route 53).
 
 2. Connect to the Instance
 ```sh
-```Copy```
-```Edit```
 ssh -i your-key.pem ec2-user@your-ec2-public-ip
 ```
 3. Update and Add Required Repositories (Dependencies)
 ```sh
-Copy
-Edit
 sudo apt update
 sudo apt upgrade -y
 sudo apt install software-properties-common -y
@@ -45,8 +41,6 @@ pip3 --version
 ```
 You should see something like:
 ```csharp
-Copy
-Edit
 Python 3.x.x
 pip 20.x.x from ...
 ```
@@ -55,48 +49,34 @@ pip 20.x.x from ...
 ✅ Use a Virtual Environment
 Step 1: Install python3-venv
 ```bash
-Copy
-Edit
 sudo apt install python3-venv -y
 ```
 Step 2: Create a Virtual Environment
 ```bash
-Copy
-Edit
 python3 -m venv myenv
 ```
 Step 3: Activate the Virtual Environment
 ```bash
-Copy
-Edit
 source myenv/bin/activate
 ```
 Your prompt will now look like this:
 ```bash
-Copy
-Edit
 (myenv) ubuntu@ip-172-31-26-7:~$
 ```
 Step 4: Install Flask inside the Virtual Environment
 ```bash
-Copy
-Edit
 pip install flask
 ```
 Step 5: Run Your Flask App
 Now you can run your Flask app normally:
 
 ```bash
-Copy
-Edit
 python app.py
 ```
 ✅ Optional: Deactivate Environment
 When you're done working:
 
 ```bash
-Copy
-Edit
 deactivate
 ```
 ### Project Structure
@@ -299,7 +279,7 @@ python3 app.py
 1. Using nohup (No Hang Up)
 This method will keep your Flask app running even if you log out of the SSH session.
 
-- 1. Run your Flask app with nohup:
+1. - Run your Flask app with nohup:
 
 ```bash
 nohup python3 app.py &
@@ -308,14 +288,14 @@ nohup python3 app.py &
 
 - nohup ensures the app keeps running even after you log out.
 
-- 2. Check if it’s running:
+2. - Check if it’s running:
 
 ```bash
 ps aux | grep app.py
 ```
 You should see the Flask app running in the background.
 
-- 3. Log Output: By default, nohup will output logs to a file called nohup.out. You can check it:
+3. - Log Output: By default, nohup will output logs to a file called nohup.out. You can check it:
 
 ```bash
 cat nohup.out
