@@ -56,7 +56,7 @@ jobs:
 
       - name: Store Private Key in GitHub Secret
         env:
-          GH_TOKEN: ${{ secrets.GH_PAT }} # Use Personal Access Token (PAT) instead of GITHUB_TOKEN
+          GH_TOKEN: ${{ secrets.GH_PAT }} # Explicitly setting GH_TOKEN using the Personal Access Token (PAT)
         run: |
           PRIVATE_KEY=$(terraform output -raw private_key)
           echo "$PRIVATE_KEY" | gh secret set DEPLOY_PRIVATE_KEY --repo ${{ github.repository }}
