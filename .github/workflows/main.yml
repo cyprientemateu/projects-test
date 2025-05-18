@@ -45,11 +45,16 @@ jobs:
       id: ec2_ip
       working-directory: demo-project5/terraform
       run: |
-        ip=$(terraform output -raw instance_public_ip 2>/dev/null | tr -d '\n\r' || echo "error")
-        if [ "$ip" = "error" ] || [ -z "$ip" ]; then
+        # Run terraform output quietly to get only the IP
+        ip=$(terraform output -raw instance_public_ip 2>/dev/null)
+        # Clean any whitespace/newlines just in case
+        ip=$(echo "$ip" | tr -d '\r\n')
+
+        if [ -z "$ip" ]; then
           echo "Failed to get instance_public_ip from Terraform output"
           exit 1
         fi
+
         echo "ip=$ip" >> $GITHUB_OUTPUT
         echo "Instance public IP is: $ip"
 
