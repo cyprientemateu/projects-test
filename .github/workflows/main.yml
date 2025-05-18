@@ -54,10 +54,18 @@ jobs:
           echo "ip=$ip" >> $GITHUB_ENV
           echo "Public IP is: $ip"
 
-      - name: Store Private Key in GitHub Secret
-        env:
-          GH_TOKEN: ${{ secrets.GH_PAT }} # Explicitly setting GH_TOKEN using the Personal Access Token (PAT)
+      - name: Install GitHub CLI # Ensure GitHub CLI is installed before storing secrets
         run: |
+          sudo apt update
+          sudo apt install gh
+
+      - name: Authenticate GitHub CLI & Store Private Key in GitHub Secret
+        env:
+          GH_TOKEN: ${{ secrets.GH_PAT }} # Use Personal Access Token (PAT) instead of GITHUB_TOKEN
+        run: |
+          echo "Authenticating GitHub CLI..."
+          echo "$GH_TOKEN" | gh auth login --with-token
+
           PRIVATE_KEY=$(terraform output -raw private_key)
           echo "$PRIVATE_KEY" | gh secret set DEPLOY_PRIVATE_KEY --repo ${{ github.repository }}
 
