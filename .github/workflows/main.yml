@@ -33,6 +33,10 @@ jobs:
       working-directory: demo-project5/terraform
       run: terraform init
 
+    - name: Terraform Destroy (auto-approve)
+      working-directory: demo-project5/terraform
+      run: terraform destroy -auto-approve
+
     - name: Terraform Apply
       working-directory: demo-project5/terraform
       run: terraform apply -auto-approve
@@ -41,8 +45,8 @@ jobs:
       id: ec2_ip
       working-directory: demo-project5/terraform
       run: |
-        ip=$(terraform output -raw instance_public_ip 2>/dev/null || echo "error")
-        if [ "$ip" = "error" ]; then
+        ip=$(terraform output -raw instance_public_ip 2>/dev/null | tr -d '\n\r' || echo "error")
+        if [ "$ip" = "error" ] || [ -z "$ip" ]; then
           echo "Failed to get instance_public_ip from Terraform output"
           exit 1
         fi
