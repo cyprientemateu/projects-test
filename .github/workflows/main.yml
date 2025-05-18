@@ -58,6 +58,10 @@ jobs:
         echo "ip=$ip" >> $GITHUB_OUTPUT
         echo "Instance public IP is: $ip"
 
+    - name: Use EC2 IP
+      run: |
+        echo "EC2 IP: ${{ steps.ec2_ip.outputs.ip }}"    
+
     - name: Wait for SSH to be available
       run: |
         echo "EC2 IP: ${{ steps.ec2_ip.outputs.ip }}"
