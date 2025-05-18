@@ -21,7 +21,7 @@ resource "aws_instance" "web" {
 }
 
 resource "aws_security_group" "web_sg" {
-  name        = "tcc-web-sg"
+  name        = "tcc-web-sg-ci"
   description = "Allow SSH and HTTP"
 
   ingress {

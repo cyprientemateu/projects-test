@@ -31,7 +31,7 @@ jobs:
 
     - name: Terraform Init
       working-directory: demo-project5/terraform
-      run: terraform init
+      run: terraform init -input=false
 
     - name: Terraform Destroy (auto-approve)
       working-directory: demo-project5/terraform
