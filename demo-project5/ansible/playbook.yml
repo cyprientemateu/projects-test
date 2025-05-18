@@ -3,7 +3,7 @@
   become: yes
   tasks:
     - name: Install Docker
-      amazon.aws.package:
+      yum:
         name: docker
         state: present
 
