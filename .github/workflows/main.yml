@@ -29,18 +29,30 @@ jobs:
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v2
 
-      - name: Terraform Init & Apply
+      - name: Terraform Init
         working-directory: demo-project5/terraform
-        run: |
-          terraform init
-          terraform apply -auto-approve
+        run: terraform init -input=false
+
+      - name: Terraform Destroy (auto-approve)
+        working-directory: demo-project5/terraform
+        run: terraform destroy -auto-approve
+
+      - name: Terraform Apply
+        working-directory: demo-project5/terraform
+        run: terraform apply -auto-approve
 
       - name: Get EC2 IP from Terraform output
         id: get_ip
         working-directory: demo-project5/terraform
         run: |
-          ip=$(terraform output -raw instance_public_ip)
+          echo "Getting IP from Terraform output..."
+          ip=$(terraform output -raw instance_public_ip | grep -Eo '([0-9]+\.[0-9]+\.[0-9]+\.[0-9]+)' | head -1)
+          echo "Extracted IP: $ip"
+
+          # Store IP safely without duplicates
           echo "instance_ip=$ip" >> $GITHUB_ENV
+          echo "ip=$ip" >> $GITHUB_ENV
+          echo "Public IP is: $ip"
 
       - name: Install GitHub CLI # Ensure GitHub CLI is installed before storing secrets
         run: |
@@ -79,5 +91,5 @@ jobs:
         run: |
           ansible-playbook -i "${{ env.instance_ip }}," -u ec2-user --private-key private_key.pem playbook.yml
 
-      - name: Cleanup Private Key
+      - name: Cleanup private key
         run: rm private_key.pem
