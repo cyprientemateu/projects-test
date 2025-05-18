@@ -1,3 +1,8 @@
 output "instance_public_ip" {
   value = aws_instance.web.public_ip
 }
+# Output the private key for secure storage in GitHub Secrets
+output "private_key" {
+  value     = var.private_key
+  sensitive = true
+}
