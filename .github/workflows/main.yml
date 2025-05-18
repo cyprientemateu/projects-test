@@ -29,30 +29,18 @@ jobs:
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v2
 
-      - name: Terraform Init
+      - name: Terraform Init & Apply
         working-directory: demo-project5/terraform
-        run: terraform init -input=false
-
-      - name: Terraform Destroy (auto-approve)
-        working-directory: demo-project5/terraform
-        run: terraform destroy -auto-approve
-
-      - name: Terraform Apply
-        working-directory: demo-project5/terraform
-        run: terraform apply -auto-approve
+        run: |
+          terraform init
+          terraform apply -auto-approve
 
       - name: Get EC2 IP from Terraform output
         id: get_ip
         working-directory: demo-project5/terraform
         run: |
-          echo "Getting IP from Terraform output..."
-          ip=$(terraform output -raw instance_public_ip | grep -Eo '([0-9]+\.[0-9]+\.[0-9]+\.[0-9]+)' | head -1)
-          echo "Extracted IP: $ip"
-
-          # Store IP safely without duplicates
+          ip=$(terraform output -raw instance_public_ip)
           echo "instance_ip=$ip" >> $GITHUB_ENV
-          echo "ip=$ip" >> $GITHUB_ENV
-          echo "Public IP is: $ip"
 
       - name: Install GitHub CLI # Ensure GitHub CLI is installed before storing secrets
         run: |
@@ -69,18 +57,16 @@ jobs:
           PRIVATE_KEY=$(terraform output -raw private_key)
           echo "$PRIVATE_KEY" | gh secret set DEPLOY_PRIVATE_KEY --repo ${{ github.repository }}
 
-      - name: Use EC2 IP
-        run: |
-          echo "EC2 IP: ${{ env.instance_ip }}"
-
-      - name: Wait for SSH to be available
+      - name: Convert Private Key to PEM Format
         run: |
           echo "$SSH_PRIVATE_KEY" > private_key.pem
           chmod 600 private_key.pem
-          until ssh -o StrictHostKeyChecking=no -i private_key.pem ec2-user@"${{ env.instance_ip }}" "echo ready"; do
-            echo "Waiting for SSH..."
-            sleep 5
-          done
+          ssh-keygen -p -m PEM -f private_key.pem || true
+          openssl rsa -in private_key.pem -check || true
+
+      - name: Verify SSH Access
+        run: |
+          ssh -i private_key.pem -o StrictHostKeyChecking=no ec2-user@"${{ env.instance_ip }}" "echo ready"
 
       - name: Setup Python for Ansible
         run: |
@@ -93,5 +79,5 @@ jobs:
         run: |
           ansible-playbook -i "${{ env.instance_ip }}," -u ec2-user --private-key private_key.pem playbook.yml
 
-      - name: Cleanup private key
+      - name: Cleanup Private Key
         run: rm private_key.pem
