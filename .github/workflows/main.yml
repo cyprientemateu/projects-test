@@ -46,7 +46,7 @@ jobs:
         working-directory: demo-project5/terraform
         run: |
           echo "Getting IP from Terraform output..."
-          ip=$(terraform output -raw instance_public_ip | tr -d '"')
+          ip=$(terraform output -raw instance_public_ip | grep -Eo '([0-9]+\.[0-9]+\.[0-9]+\.[0-9]+)')
           echo "instance_ip=$ip" >> $GITHUB_ENV
           echo "ip=$ip" >> $GITHUB_OUTPUT
           echo "Public IP is: $ip"
