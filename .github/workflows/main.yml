@@ -42,31 +42,23 @@ jobs:
       run: terraform apply -auto-approve
 
     - name: Get EC2 IP from Terraform output
-      id: ec2_ip
+      id: get_ip
       working-directory: demo-project5/terraform
       shell: bash
       run: |
         echo "Getting IP from Terraform output..."
-        ip=$(terraform output -raw instance_public_ip 2>/dev/null | tr -d '\r\n')
-
-        if [[ -z "$ip" || "$ip" == *"command"* ]]; then
-          echo "Failed to get clean instance_public_ip. Got: $ip"
-          exit 1
-        fi
-
-        echo "ip=$ip" >> "$GITHUB_OUTPUT"
-        echo "Instance public IP is: $ip"
+        ip=$(terraform output -raw instance_public_ip)
+        echo "instance_ip=$ip" >> "$GITHUB_OUTPUT"
 
     - name: Use EC2 IP
       run: |
-        echo "EC2 IP: ${{ steps.ec2_ip.outputs.ip }}"
+        echo "EC2 IP: ${{ steps.get_ip.outputs.instance_ip }}"
 
     - name: Wait for SSH to be available
       run: |
-        echo "EC2 IP: ${{ steps.ec2_ip.outputs.ip }}"
         echo "$SSH_PRIVATE_KEY" > private_key.pem
         chmod 600 private_key.pem
-        until ssh -o StrictHostKeyChecking=no -i private_key.pem ec2-user@${{ steps.ec2_ip.outputs.ip }} "echo ready"; do
+        until ssh -o StrictHostKeyChecking=no -i private_key.pem ec2-user@${{ steps.get_ip.outputs.instance_ip }} "echo ready"; do
           echo "Waiting for SSH..."
           sleep 5
         done
@@ -80,7 +72,7 @@ jobs:
     - name: Run Ansible Playbook
       working-directory: demo-project5/ansible
       run: |
-        ansible-playbook -i "${{ steps.ec2_ip.outputs.ip }}," -u ec2-user --private-key private_key.pem playbook.yml
+        ansible-playbook -i "${{ steps.get_ip.outputs.instance_ip }}," -u ec2-user --private-key private_key.pem playbook.yml
 
     - name: Cleanup private key
       run: rm private_key.pem
