@@ -2,7 +2,8 @@ name: CI-CD Pipeline
 
 on:
   push:
-    branches: [ main ]
+    branches:
+      - main
 
 jobs:
   deploy:
@@ -11,41 +12,49 @@ jobs:
     env:
       TF_VAR_aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
       TF_VAR_aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      TF_VAR_public_key:     ${{ secrets.SSH_PUBLIC_KEY }}
+      SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
 
     steps:
-    - name: Checkout code
+    - name: Checkout repo
       uses: actions/checkout@v3
+
+    - name: Setup AWS CLI
+      uses: aws-actions/configure-aws-credentials@v2
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: us-east-1
 
     - name: Setup Terraform
       uses: hashicorp/setup-terraform@v2
 
     - name: Terraform Init
-      working-directory: ./terraform
+      working-directory: demo-project5/terraform
       run: terraform init
 
     - name: Terraform Apply
-      working-directory: ./terraform
+      working-directory: demo-project5/terraform
       run: terraform apply -auto-approve
 
-    - name: Get EC2 Public IP
+    - name: Get EC2 IP from Terraform output
       id: ec2_ip
-      working-directory: ./terraform
-      run: echo "EC2_PUBLIC_IP=$(terraform output -raw instance_public_ip)" >> $GITHUB_ENV
+      working-directory: demo-project5/terraform
+      run: echo "::set-output name=ip::$(terraform output -raw public_ip)"
 
-    - name: Write SSH Key
+    - name: Wait for SSH to be available
       run: |
-        echo "${{ secrets.DEPLOY_PRIVATE_KEY }}" > deploy-key.pem
-        chmod 600 deploy-key.pem
+        until ssh -o StrictHostKeyChecking=no -i <(echo "$SSH_PRIVATE_KEY") ec2-user@${{ steps.ec2_ip.outputs.ip }} "echo ready"; do
+          echo "Waiting for SSH..."
+          sleep 5
+        done
 
-    - name: Wait for SSH
+    - name: Setup Python for Ansible
       run: |
-        echo "Waiting for EC2 to become reachable..."
-        sleep 60
+        sudo apt-get update
+        sudo apt-get install -y python3 python3-pip sshpass
+        pip3 install --user ansible
 
     - name: Run Ansible Playbook
+      working-directory: demo-project5/ansible
       run: |
-        sudo apt-get update && sudo apt-get install -y ansible
-        ansible-playbook ansible/playbook.yml -i "$EC2_PUBLIC_IP," \
-          --private-key deploy-key.pem \
-          -u ec2-user
+        ansible-playbook -i "${{ steps.ec2_ip.outputs.ip }}," -u ec2-user --private-key <(echo "$SSH_PRIVATE_KEY") playbook.yml
