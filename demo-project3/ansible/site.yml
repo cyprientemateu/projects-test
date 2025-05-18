@@ -1,0 +1,7 @@
+---
+- name: Provision EC2 with Docker and Reverse Proxy
+  hosts: all
+  become: yes
+  roles:
+    - docker
+    - reverse_proxy

@@ -1,3 +1,3 @@
 git add -A
-git commit -m "added new files"
+git commit -m "Initial CI/CD setup"
 git push

@@ -1,0 +1,51 @@
+---
+- hosts: all
+  become: yes
+  tasks:
+    - name: Install Docker
+      amazon.aws.package:
+        name: docker
+        state: present
+
+    - name: Start Docker
+      service:
+        name: docker
+        state: started
+        enabled: true
+
+    - name: Run your Docker app
+      docker_container:
+        name: myapp
+        image: cyprientemateu/clinic-website:v1
+        state: started
+        ports:
+          - "8080:80"
+
+    - name: Install Nginx
+      yum:
+        name: nginx
+        state: present
+
+    - name: Start Nginx
+      service:
+        name: nginx
+        state: started
+        enabled: true
+
+    - name: Configure Nginx reverse proxy
+      copy:
+        dest: /etc/nginx/conf.d/reverse.conf
+        content: |
+          server {
+              listen 80;
+              location / {
+                  proxy_pass http://localhost:8080;
+              }
+          }
+      notify: Restart nginx
+
+  handlers:
+    - name: Restart nginx
+      service:
+        name: nginx
+        state: restarted
