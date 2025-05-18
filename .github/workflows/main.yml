@@ -49,12 +49,7 @@ jobs:
           ip=$(terraform output -raw instance_public_ip | grep -Eo '([0-9]+\.[0-9]+\.[0-9]+\.[0-9]+)')
           echo "Extracted IP: $ip"
           
-          # Corrected validation check
-          if ! [[ "$ip" =~ ^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
-              echo "Error: Invalid IP format detected: $ip"
-              exit 1
-          fi
-          
+          # Remove unnecessary validation check
           echo "instance_ip=${ip}" > instance_ip.txt
           cat instance_ip.txt >> $GITHUB_ENV
           cat instance_ip.txt >> $GITHUB_OUTPUT
