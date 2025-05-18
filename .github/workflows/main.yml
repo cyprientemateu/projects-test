@@ -44,23 +44,22 @@ jobs:
     - name: Get EC2 IP from Terraform output
       id: ec2_ip
       working-directory: demo-project5/terraform
+      shell: bash
       run: |
-        # Run terraform output quietly to get only the IP
-        ip=$(terraform output -raw instance_public_ip 2>/dev/null)
-        # Clean any whitespace/newlines just in case
-        ip=$(echo "$ip" | tr -d '\r\n')
+        echo "Getting IP from Terraform output..."
+        ip=$(terraform output -raw instance_public_ip 2>/dev/null | tr -d '\r\n')
 
-        if [ -z "$ip" ]; then
-          echo "Failed to get instance_public_ip from Terraform output"
+        if [[ -z "$ip" || "$ip" == *"command"* ]]; then
+          echo "Failed to get clean instance_public_ip. Got: $ip"
           exit 1
         fi
 
-        echo "ip=$ip" >> $GITHUB_OUTPUT
+        echo "ip=$ip" >> "$GITHUB_OUTPUT"
         echo "Instance public IP is: $ip"
 
     - name: Use EC2 IP
       run: |
-        echo "EC2 IP: ${{ steps.ec2_ip.outputs.ip }}"    
+        echo "EC2 IP: ${{ steps.ec2_ip.outputs.ip }}"
 
     - name: Wait for SSH to be available
       run: |
