@@ -59,7 +59,7 @@ jobs:
         run: |
           echo "$SSH_PRIVATE_KEY" > private_key.pem
           chmod 600 private_key.pem
-          until ssh -o StrictHostKeyChecking=no -i private_key.pem ec2-user@${{ env.instance_ip }} "echo ready"; do
+          until ssh -o StrictHostKeyChecking=no -i private_key.pem ec2-user@"${{ env.instance_ip }}" "echo ready"; do
             echo "Waiting for SSH..."
             sleep 5
           done
