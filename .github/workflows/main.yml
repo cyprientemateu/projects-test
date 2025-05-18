@@ -51,9 +51,11 @@ jobs:
           exit 1
         fi
         echo "ip=$ip" >> $GITHUB_OUTPUT
+        echo "Instance public IP is: $ip"
 
     - name: Wait for SSH to be available
       run: |
+        echo "EC2 IP: ${{ steps.ec2_ip.outputs.ip }}"
         echo "$SSH_PRIVATE_KEY" > private_key.pem
         chmod 600 private_key.pem
         until ssh -o StrictHostKeyChecking=no -i private_key.pem ec2-user@${{ steps.ec2_ip.outputs.ip }} "echo ready"; do
