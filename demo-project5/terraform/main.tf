@@ -1,5 +1,5 @@
 resource "aws_key_pair" "deployer" {
-  key_name   = "tcc-ec2-key-test"
+  key_name   = "tcc-ec2-key-test1"
   public_key = var.public_key
 }
 
