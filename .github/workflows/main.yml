@@ -49,11 +49,13 @@ jobs:
           ip=$(terraform output -raw instance_public_ip | grep -Eo '([0-9]+\.[0-9]+\.[0-9]+\.[0-9]+)')
           echo "Extracted IP: $ip"
 
+          # Trim any whitespace or special characters
+          ip=$(echo "$ip" | tr -d '[:space:]')
+          echo "Sanitized IP: $ip"
+
           # Store IP safely to prevent GitHub Actions formatting errors
-          echo "instance_ip=${ip}" > instance_ip.txt
-          echo "ip=${ip}" > ip.txt
-          cat instance_ip.txt >> $GITHUB_ENV
-          cat ip.txt >> $GITHUB_OUTPUT
+          echo "instance_ip=$ip" | tee -a $GITHUB_ENV
+          echo "ip=$ip" | tee -a $GITHUB_ENV
           echo "Public IP is: $ip"
 
       - name: Use EC2 IP
