@@ -35,7 +35,7 @@ jobs:
 
       - name: Terraform Destroy (auto-approve)
         working-directory: demo-project5/terraform
-        run: terraform destroy -auto-approve
+        run: terraform destroy -auto-approve #-lock=false
 
       - name: Terraform Apply
         working-directory: demo-project5/terraform
@@ -66,16 +66,17 @@ jobs:
           echo "Authenticating GitHub CLI..."
           echo "$GH_TOKEN" | gh auth setup-git || true
 
-      - name: Store Private Key in GitHub Secret (Without Encoding)
+      - name: Store Private Key in GitHub Secret
         env:
           GH_TOKEN: ${{ secrets.GH_PAT }}
         run: |
           PRIVATE_KEY=$(terraform output -raw private_key | tr -d '\r')
-          echo "$PRIVATE_KEY" | gh secret set DEPLOY_PRIVATE_KEY --repo ${{ github.repository }}
+          ENCODED_PRIVATE_KEY=$(echo "$PRIVATE_KEY" | base64)
+          echo "$ENCODED_PRIVATE_KEY" | gh secret set DEPLOY_PRIVATE_KEY --repo ${{ github.repository }}
 
-      - name: Retrieve Private Key Without Encoding
+      - name: Decode Private Key & Fix Formatting
         run: |
-          echo "$SSH_PRIVATE_KEY" > private_key.pem
+          echo "$SSH_PRIVATE_KEY" | base64 --decode | tr -d '\r' > private_key.pem
           chmod 600 private_key.pem
           ssh-keygen -p -m PEM -f private_key.pem || true
           openssl rsa -in private_key.pem -check || true
