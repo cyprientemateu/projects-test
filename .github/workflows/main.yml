@@ -64,7 +64,7 @@ jobs:
           GH_TOKEN: ${{ secrets.GH_PAT }}
         run: |
           echo "Authenticating GitHub CLI..."
-          echo "$GH_TOKEN" | gh auth login --with-token || true
+          echo "$GH_TOKEN" | gh auth Setup-git || true
 
       - name: Store Private Key in GitHub Secret
         env:
