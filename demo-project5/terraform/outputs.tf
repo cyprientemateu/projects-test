@@ -3,10 +3,6 @@ output "instance_public_ip" {
 }
 # Output the private key for secure storage in GitHub Secrets
 output "private_key" {
-  value     = var.private_key
-  sensitive = true
-}
-output "private_key" {
-  value     = tls_private_key.example.private_key_pem
+  value     = tls_private_key.generated.private_key_pem
   sensitive = true
 }
