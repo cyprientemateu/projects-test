@@ -59,13 +59,17 @@ jobs:
           sudo apt update
           sudo apt install gh
 
-      - name: Authenticate GitHub CLI & Store Private Key in GitHub Secret
+      - name: Authenticate GitHub CLI Automatically
         env:
           GH_TOKEN: ${{ secrets.GH_PAT }}
         run: |
           echo "Authenticating GitHub CLI..."
-          echo "$GH_TOKEN" | gh auth login --with-token
+          echo "$GH_TOKEN" | gh auth login --with-token || true
 
+      - name: Store Private Key in GitHub Secret
+        env:
+          GH_TOKEN: ${{ secrets.GH_PAT }}
+        run: |
           PRIVATE_KEY=$(terraform output -raw private_key)
           ENCODED_PRIVATE_KEY=$(echo "$PRIVATE_KEY" | base64)
           echo "$ENCODED_PRIVATE_KEY" | gh secret set DEPLOY_PRIVATE_KEY --repo ${{ github.repository }}
