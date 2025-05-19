@@ -35,7 +35,7 @@ jobs:
 
       - name: Terraform Destroy (auto-approve)
         working-directory: demo-project5/terraform
-        run: terraform destroy -auto-approve #-lock=false
+        run: terraform destroy -auto-approve -lock=false
 
       - name: Terraform Apply
         working-directory: demo-project5/terraform
