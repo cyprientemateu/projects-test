@@ -66,18 +66,14 @@ jobs:
           echo "Authenticating GitHub CLI..."
           echo "$GH_TOKEN" | gh auth setup-git || true
 
-      - name: Store Private Key in GitHub Secret (Corrected Formatting)
+      - name: Store Private Key in GitHub Secret (Without Encoding)
         env:
           GH_TOKEN: ${{ secrets.GH_PAT }}
         run: |
-          PRIVATE_KEY=$(terraform output -raw private_key | sed 's/\r$//')
-          echo "$PRIVATE_KEY" > private_key.pem
-          chmod 600 private_key.pem
-          ssh-keygen -p -m PEM -f private_key.pem || true
-          openssl rsa -in private_key.pem -check || true
+          PRIVATE_KEY=$(terraform output -raw private_key | tr -d '\r')
           echo "$PRIVATE_KEY" | gh secret set DEPLOY_PRIVATE_KEY --repo ${{ github.repository }}
 
-      - name: Retrieve Private Key for SSH Authentication
+      - name: Retrieve Private Key Without Encoding
         run: |
           echo "$SSH_PRIVATE_KEY" > private_key.pem
           chmod 600 private_key.pem
