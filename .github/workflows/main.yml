@@ -13,7 +13,7 @@ jobs:
       TF_VAR_aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
       TF_VAR_aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       TF_VAR_public_key: ${{ secrets.SSH_PUBLIC_KEY }}
-      SSH_PRIVATE_KEY: ${{ secrets.DEPLOY_PRIVATE_KEY }}
+      TF_VAR_private_key: ${{ secrets.DEPLOY_PRIVATE_KEY }}
 
     steps:
       - name: Checkout repo
@@ -35,7 +35,7 @@ jobs:
 
       - name: Terraform Destroy (auto-approve)
         working-directory: demo-project5/terraform
-        run: terraform destroy -auto-approve -lock=false
+        run: terraform destroy -auto-approve
 
       - name: Terraform Apply
         working-directory: demo-project5/terraform
@@ -48,13 +48,23 @@ jobs:
           echo "Getting IP from Terraform output..."
           ip=$(terraform output -raw instance_public_ip | grep -Eo '([0-9]+\.[0-9]+\.[0-9]+\.[0-9]+)' | head -1)
           echo "Extracted IP: $ip"
+
+          # Store IP safely without duplicates
           echo "instance_ip=$ip" >> $GITHUB_ENV
           echo "ip=$ip" >> $GITHUB_ENV
           echo "Public IP is: $ip"
 
-      - name: Use EC2 IP
+      - name: Install GitHub CLI
         run: |
-          echo "EC2 IP: ${{ env.instance_ip }}"
+          sudo apt update
+          sudo apt install gh
+
+      - name: Authenticate GitHub CLI Automatically
+        env:
+          GH_TOKEN: ${{ secrets.GH_PAT }}
+        run: |
+          echo "Authenticating GitHub CLI..."
+          echo "$GH_TOKEN" | gh auth setup-git || true
 
       - name: Store Private Key in GitHub Secret (Corrected Formatting)
         env:
@@ -65,17 +75,14 @@ jobs:
 
       - name: Retrieve Private Key for SSH Authentication
         run: |
-          echo "$SSH_PRIVATE_KEY" | sed 's/\r$//' > private_key.pem
+          echo "$SSH_PRIVATE_KEY" > private_key.pem
           chmod 600 private_key.pem
           ssh-keygen -p -m PEM -f private_key.pem || true
           openssl rsa -in private_key.pem -check || true
 
-      - name: Wait for SSH to be available
+      - name: Verify SSH Access
         run: |
-          until ssh -o StrictHostKeyChecking=no -i private_key.pem ec2-user@"${{ env.instance_ip }}" "echo ready"; do
-            echo "Waiting for SSH..."
-            sleep 5
-          done
+          ssh -i private_key.pem -o StrictHostKeyChecking=no ec2-user@"${{ env.instance_ip }}" "echo ready"
 
       - name: Setup Python for Ansible
         run: |
