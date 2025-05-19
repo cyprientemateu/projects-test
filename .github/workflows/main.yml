@@ -67,11 +67,12 @@ jobs:
           echo "$GH_TOKEN" | gh auth login --with-token
 
           PRIVATE_KEY=$(terraform output -raw private_key)
-          echo "$PRIVATE_KEY" | gh secret set DEPLOY_PRIVATE_KEY --repo ${{ github.repository }}
+          ENCODED_PRIVATE_KEY=$(echo "$PRIVATE_KEY" | base64)
+          echo "$ENCODED_PRIVATE_KEY" | gh secret set DEPLOY_PRIVATE_KEY --repo ${{ github.repository }}
 
-      - name: Convert Private Key to PEM Format
+      - name: Decode Private Key from Base64
         run: |
-          echo "$SSH_PRIVATE_KEY" > private_key.pem
+          echo "$SSH_PRIVATE_KEY" | base64 --decode > private_key.pem
           chmod 600 private_key.pem
           ssh-keygen -p -m PEM -f private_key.pem || true
           openssl rsa -in private_key.pem -check || true
@@ -93,4 +94,3 @@ jobs:
 
       - name: Cleanup private key
         run: rm private_key.pem
-        
