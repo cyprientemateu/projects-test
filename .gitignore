@@ -19,3 +19,10 @@ terraform.tfvars
 
 # Local .terraform directories
 # .terraform-version    
+# .vscode/
+# .idea/      
+# *.iml
+# .DS_Store   
+# *.log
+# *.backup
+# *.swp

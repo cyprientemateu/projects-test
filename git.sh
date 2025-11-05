@@ -1,3 +1,3 @@
 git add -A
-git commit -m "Initial CI/CD setup"
+git commit -m "Updated .gitignore and README.md files"
 git push
