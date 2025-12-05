@@ -1,3 +1,3 @@
 git add -A
-git commit -m "Updated .gitignore and README.md files"
+git commit -m "Restructured Files and Folders"
 git push

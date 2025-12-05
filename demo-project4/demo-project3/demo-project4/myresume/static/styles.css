@@ -1,0 +1,73 @@
+/* Reset */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+/* Body */
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f4f4f4;
+    color: #333;
+    line-height: 1.6;
+}
+
+header {
+    background-color: #222;
+    color: white;
+    text-align: center;
+    padding: 25px 0;
+}
+
+header h1 { font-size: 2.5em; }
+header p { font-size: 1.2em; color: #bbb; }
+
+nav a { color: #f1f1f1; margin: 0 15px; text-decoration: none; font-weight: bold; }
+nav a:hover { color: #4db8ff; }
+
+section {
+    max-width: 900px;
+    margin: 40px auto;
+    background: white;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+h2 { color: #222; margin-bottom: 15px; }
+ul li { margin-bottom: 15px; }
+
+.profile-pic {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid #4db8ff;
+    margin-bottom: 15px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    header h1 { font-size: 2em; }
+    nav a { display: block; margin: 10px 0; }
+    section { margin: 20px 10px; padding: 20px; }
+}
+
+/* Dark Mode */
+body.dark-mode { background-color: #121212; color: #eee; }
+body.dark-mode header { background-color: #000; }
+body.dark-mode nav a { color: #ddd; }
+body.dark-mode nav a:hover { color: #4db8ff; }
+body.dark-mode section { background-color: #1e1e1e; box-shadow: 0 4px 12px rgba(0,0,0,0.7); }
+
+/* Buttons */
+.button {
+    display: inline-block;
+    padding: 10px 20px;
+    margin: 15px 0;
+    background-color: #4db8ff;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    text-decoration: none;
+    font-weight: bold;
+}
+.button:hover { background-color: #3399ff; }

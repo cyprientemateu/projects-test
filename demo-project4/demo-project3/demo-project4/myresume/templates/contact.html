@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact | Cyprien Temateu</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+<header>
+    <h1>Contact Me</h1>
+    <nav>
+        <a href="/">Home</a>
+        <a href="/about">About</a>
+        <a href="/projects">Projects</a>
+        <a href="/contact">Contact</a>
+    </nav>
+</header>
+
+<section>
+    <h2>Get in Touch</h2>
+    <p>Email: <strong>cctemateu@gmail.com</strong></p>
+    <p>LinkedIn: <strong>linkedin.com/in/cctemateu</strong></p>
+    <p>GitHub: <strong>github.com/cyprientemateu</strong></p>
+</section>
+
+<script>
+const toggleBtn = document.createElement('button');
+toggleBtn.textContent = 'Toggle Dark Mode';
+toggleBtn.className = 'button';
+document.body.prepend(toggleBtn);
+
+toggleBtn.addEventListener('click', () => {
+    document.body.classList.toggle('dark-mode');
+});
+</script>
+
+</body>
+</html>
+
+

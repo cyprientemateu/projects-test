@@ -1,0 +1,64 @@
+- hosts: resume
+  become: yes
+  tasks:
+    - name: Update apt
+      apt:
+        update_cache: yes
+        upgrade: dist
+
+    - name: Install dependencies
+      apt:
+        name:
+          - python3-pip
+          - python3-venv
+          - nginx
+        state: present
+
+    - name: Clone resume repo
+      git:
+        repo: "https://github.com/cyprientemateu/your-repo.git"
+        dest: /home/ubuntu/myresume
+        version: main
+
+    - name: Setup Python venv
+      command: python3 -m venv /home/ubuntu/myresume/venv
+
+    - name: Install Flask
+      pip:
+        virtualenv: /home/ubuntu/myresume/venv
+        name: flask
+
+    - name: Configure Nginx
+      copy:
+        dest: /etc/nginx/sites-available/resume
+        content: |
+          server {
+              listen 80;
+              server_name _;
+              location / {
+                  proxy_pass http://127.0.0.1:5000;
+                  proxy_set_header Host $host;
+                  proxy_set_header X-Real-IP $remote_addr;
+                  proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+                  proxy_set_header X-Forwarded-Proto $scheme;
+              }
+          }
+
+    - name: Enable Nginx site
+      file:
+        src: /etc/nginx/sites-available/resume
+        dest: /etc/nginx/sites-enabled/resume
+        state: link
+
+    - name: Remove default site
+      file:
+        path: /etc/nginx/sites-enabled/default
+        state: absent
+
+    - name: Restart Nginx
+      service:
+        name: nginx
+        state: restarted
+
+    - name: Start Flask app
+      shell: "nohup /home/ubuntu/myresume/venv/bin/python /home/ubuntu/myresume/app.py &"
