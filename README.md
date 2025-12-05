@@ -6,7 +6,7 @@
 ## 3. Demo-project3 - Static Resume Website
 [README](https://github.com/cyprientemateu/projects-test/blob/main/demo-project3)
 ## 4. Demo-project4 - Dynimic Resume Website
-[README](https://github.com/cyprientemateu/projects-test/blob/main/demo-project4/project_file.md)
+[README](https://github.com/cyprientemateu/projects-test/blob/main/demo-project4/README.md)
 ## 5. Demo-project5
 [README](https://github.com/cyprientemateu/projects-test/tree/main/demo-project5)
 ## 6. Demo-project6 
