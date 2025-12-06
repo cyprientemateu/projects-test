@@ -39,7 +39,7 @@ Overview: This [diagram](https://github.com/cyprientemateu/projects-test/blob/ma
 
 ```
 
-Explanation of the architecture:
+**Explanation of the architecture:**
 
 - Docker: Packages the Flask application and its dependencies into a container for easy deployment.
 
@@ -49,7 +49,7 @@ Explanation of the architecture:
 
 - Ansible (for redeployment): Automates redeployment of the containerized application to ensure consistency and ease of updates.
 
-Explanation of the flow: 
+**Explanation of the flow:** 
 
 1. The user sends a request to your Nginx server (HTTP port 80).
 
