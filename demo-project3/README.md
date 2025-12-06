@@ -5,7 +5,7 @@ This project hosts a dynamic, interactive resume using Flask. You can run it loc
 ---
 ## 🖼 Architecture & Flow Diagram
 
-Overview: This [diagram]https://github.com/cyprientemateu/projects-test/blob/main/demo-project3/flow-diagram.png shows how the components of the project interact.
+Overview: This [diagram](https://github.com/cyprientemateu/projects-test/blob/main/demo-project3/flow-diagram.png) shows how the components of the project interact.
 
 ```plaintext
           ┌───────────────────────┐
@@ -88,12 +88,12 @@ This will install Docker, build the app, run the container, install Nginx, and c
 ### Clone the repo
 git clone [repo-url](https://github.com/cyprientemateu/projects-test.git)
 
-```bash copy code
+```bash
 cd demo-project3/myresume
 ```
 Update the **playbook.yml** file with the below block if you don't have Docker already install in your environment.
 
-```yml copy code
+```yml
 ---
 - name: Run Flask app with Docker and configure Nginx reverse proxy
   hosts: localhost
@@ -170,12 +170,12 @@ Update the **playbook.yml** file with the below block if you don't have Docker a
 ```
 
 ### Run the Ansible playbook
-```bash copy code
+```bash
 ansible-playbook ansible/playbook.yml --ask-become-pass
 ```
 
 Once complete, open your browser:
-```txt copy code
+```txt
 http://localhost
 ```
 
@@ -187,19 +187,19 @@ http://localhost
 
 1. Build the Docker image:
 
-```bash copy code
+```bash
 docker build -t resume-app .
 ```
 
 2. Run the Flask app container in the background:
 
-```bash copy code
+```bash
 docker run -d --name resume-app-container -p 5000:5000 resume-app
 ```
 
 3. Check the app:
 
-```bash copy code
+```bash
 docker logs resume-app-container
 ```
 
@@ -209,7 +209,7 @@ Open http://localhost:5000 to see the Flask app.
 
 1. Install Nginx:
 
-```bash copy code
+```bash
 sudo apt update
 sudo apt install nginx -y
 sudo systemctl enable nginx
@@ -218,7 +218,7 @@ sudo systemctl start nginx
 
 2. Create a reverse proxy configuration (/etc/nginx/sites-available/resume):
 
-```nginx  copy code
+```nginx
 server {
     listen 80;
     server_name localhost;
@@ -235,7 +235,7 @@ server {
 
 3. Enable the site and restart Nginx:
 
-```bash  copy code
+```bash
 sudo ln -s /etc/nginx/sites-available/resume /etc/nginx/sites-enabled/
 sudo rm /etc/nginx/sites-enabled/default
 sudo nginx -t
@@ -250,7 +250,7 @@ Instead of manual steps, the Ansible playbook automates everything:
 
 1. Run the playbook:
 
-```bash  copy code
+```bash
 ansible-playbook ansible/playbook.yml --ask-become-pass
 ```
 
@@ -272,7 +272,7 @@ ansible-playbook ansible/playbook.yml --ask-become-pass
 
 ## Step 4: Stop or Remove Containers (Optional)
 
-```bash  copy code
+```bash
 # Stop the container
 docker stop resume-app-container
 
